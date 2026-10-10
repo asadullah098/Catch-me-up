@@ -238,7 +238,7 @@ if (ROOT / 'dist/assets').is_dir():
     app.mount('/assets',StaticFiles(directory=ROOT / 'dist/assets'),name='frontend-assets')
 
 
-@app.get('/',include_in_schema=False)
+@app.api_route('/',methods=['GET','HEAD'],include_in_schema=False)
 def frontend():
     index=ROOT / 'dist/index.html'
     if not index.is_file():

@@ -125,7 +125,7 @@ docker build -t catch-me-up .
 docker run --env-file backend/.env -p 8080:8080 catch-me-up
 ```
 
-The container serves the frontend and API on port 8080. The health endpoint is `/api/health`. Provider configuration comes from runtime environment variables.
+The container serves the frontend and API on the `PORT` environment variable, defaulting to 8080 locally. The health endpoint is `/api/health`. Provider configuration comes from runtime environment variables.
 
 ## Tests
 

@@ -15,4 +15,4 @@ COPY backend ./backend
 COPY data ./data
 COPY --from=frontend /app/dist ./dist
 EXPOSE 8080
-CMD ["python", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["sh", "-c", "exec python -m uvicorn backend.main:app --host 0.0.0.0 --port \"${PORT:-8080}\""]
