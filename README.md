@@ -1,77 +1,86 @@
 # Catch-Me-Up
 
-**Every score has a story. Catch up on the one you missed.**
+**Every score has a story.**
 
-An AI-powered cricket companion for fans joining a match late. It turns the last five overs into three short, evidence-linked takeaways and introduces the players shaping the next over—in English or Hindi.
+Catch-Me-Up is a cricket companion for fans who join a match late. It explains the last five overs in three short takeaways and gives a quick introduction to the players shaping the next over. The whole experience is available in English and Hindi.
 
-Built for the **Dream11 Forward Deployed Engineer Intern assignment**.
+Built for the Dream11 Forward Deployed Engineer Intern assignment.
 
 ![Catch-Me-Up match story interface](docs/images/match-story.png)
 
-## The fan problem
+## Why I built it
 
-A scorecard tells a late-arriving fan **132/3**. It doesn't explain whether a newcomer just rescued the chase, spin is choking the scoring, or an unfamiliar player has a useful strength against the next bowler. Catch-Me-Up adds that context without asking fans to read dozens of commentary entries or research an entire squad.
+If I open a match at 132/3, I know the score—but I still don't know what I've missed. Has the batting side recovered from a collapse? Is a particular bowler controlling the chase? Who is the new player at the crease?
 
-## Same score. Two stories.
+I wanted a late-arriving fan to understand those things in about 20 seconds, without reading every ball or searching for player stats separately.
 
-Both fictional scenarios show **India at 132/3 after 15 overs, chasing 187**:
+## Same score, different game
 
-| Scenario | What a scorecard misses |
+The demo has two fictional match scenarios. In both, India is **132/3 after 15 overs, chasing 187**.
+
+| Story | What happened |
 | --- | --- |
-| **The comeback** (`ind-aus`) | A rookie-led 22-run over changes the chase after two wickets. |
-| **The spin squeeze** (`spin-trap`) | A four-run final completed over exposes a chase losing rhythm against spin. |
+| **The comeback** | Two wickets put the chase under pressure, then a newcomer leads a 22-run over. |
+| **The spin squeeze** | The score looks identical, but a four-run over and pressure against spin tell a different story. |
 
-Switch between them to see why the same score can mean very different things.
+That comparison is the core of the project: a scorecard gives the numbers; Catch-Me-Up explains how the game got there.
 
-## Features
+## What fans get
 
-- **Three-point vibe check:** Gemini through LangChain explains the match context; each takeaway links to supporting deliveries.
-- **Impact Players:** Two current batters and the bowler scheduled next, with experience, strengths, recent form, and Fantasy Forte.
-- **English + Hindi:** Translates the interface, commentary, summaries, and player context; remembers the chosen language.
-- **Explore the evidence:** Ball-by-ball commentary, spin-versus-pace context, and three- or five-over windows.
-- **Interactive profiles:** Save a local shortlist, filter by role, and expand player background.
-- **Responsive design:** Light glass surfaces, soft depth, player portraits, restrained motion, keyboard support, and reduced-motion support.
-- **Recovery states:** Clearly handled loading, empty feeds, failed requests, and provider fallback.
+- **A three-point match story**, covering the momentum shift, the current pressure, and what to watch next.
+- **Commentary behind each takeaway**, so fans can open the deliveries that support it.
+- **Impact Players**, limited to the two current batters and the bowler scheduled next. Each card explains experience, strengths, recent form, and Fantasy Forte.
+- **English and Hindi**, including the commentary and AI-generated player context.
+- **A player shortlist**, role filters, and expandable backgrounds.
+- **Three- or five-over windows**, with an over-by-over scoring view and spin-versus-pace context.
 
-![Impact Player cards with fictional player portraits](docs/images/impact-players.png)
+![Impact Player cards](docs/images/impact-players.png)
 
-## AI and data: what is real?
+## How it works
 
-**Real AI inference:** With Gemini configured, AI is requested on initial load and when the match, over window, or language changes. **Catch me up** regenerates the analysis. Live Gemini generation has been verified locally in English and Hindi.
-
-**Fictional source data:** Match snapshots, commentary, player names, career histories, and form records are intentionally fictional. Portraits are AI-generated fictional characters. This prototype does not fetch real live matches or support arbitrary match IDs.
-
-**Transparent fallback:** Without credentials, or if generation fails, prepared summaries keep the demo usable. The interface exposes the generation mode and fallback notice. `mock` is not live AI inference.
-
-Outputs use a Pydantic schema, validated player IDs, and validated commentary references. Reference validation does not prove every model sentence is correct; prose still needs review.
-
-## Stack and architecture
-
-| Layer | Tools |
-| --- | --- |
-| Frontend | React 19, TypeScript, Vite, Tailwind CSS, Framer Motion, Lucide |
-| Backend | Python, FastAPI, Pydantic |
-| AI | LangChain, Gemini; optional OpenAI integration |
-| Verification | pytest, Playwright, axe-core |
-| Deployment | Multi-stage Docker; FastAPI serves the compiled frontend and API |
+FastAPI selects the commentary window and calculates the match statistics. LangChain sends that context and the relevant player profiles to Gemini, which returns the takeaways and player summaries in a structured format. The backend checks the response schema, player IDs, and commentary references before returning it to React.
 
 ```text
-Fictional commentary + player profiles
-                 ↓
-FastAPI selects overs and computes statistics
-                 ↓
-LangChain → Gemini → structured story + Fantasy Forte
-                 ↓
-Schema / player / evidence-reference validation
-                 ↓
-React match story + three active-player cards
+Commentary + player profiles
+            ↓
+Over selection and calculated statistics
+            ↓
+LangChain + Gemini
+            ↓
+Structured response and reference validation
+            ↓
+Match story + Impact Players
 ```
 
-Overs use legal-ball counts, keeping extras in the correct over rather than blindly slicing 30 records. Recent form is calculated from the supplied appearances.
+Extras stay with their correct over, rather than selecting a fixed number of commentary entries. Recent player form is calculated from the supplied appearances.
 
-## Run locally
+AI generation runs when a match loads or the language or over window changes. The **Catch me up** button generates a fresh summary. If the provider is unavailable, the app shows a prepared summary with its fallback status.
 
-Prerequisites: **Node.js 22+**, **Python 3.12+**, and a Gemini API key for real generation. Commands below use Windows PowerShell.
+## A few deliberate choices
+
+**Keep the data repeatable.** The two snapshots, player histories, and form records are fictional. That makes the same-score comparison easy to demonstrate. Gemini generates the analysis from those inputs; the app isn't connected to a live sports feed. Player portraits are also generated images of fictional characters.
+
+**Keep player context focused.** A full squad adds noise for someone joining late. The three featured players are the ones relevant to the immediate situation.
+
+**Show the source.** Takeaways link back to commentary. The backend validates those references, although a valid reference alone cannot guarantee that every generated sentence is accurate.
+
+**Make Hindi part of the experience.** The language switch covers the full flow and persists across reloads.
+
+The interface uses a light palette, glass cards, soft shadows, and subtle entrance animations. It supports narrow screens, keyboard navigation, and reduced motion.
+
+## Tech stack
+
+| Part | Tools |
+| --- | --- |
+| Frontend | React, TypeScript, Vite, Tailwind CSS, Framer Motion |
+| Backend | Python, FastAPI, Pydantic |
+| AI | Gemini through LangChain; optional OpenAI integration |
+| Tests | pytest, Playwright, axe-core |
+| Packaging | Docker; frontend and API served together by FastAPI |
+
+## Local development
+
+Requires Node.js 22+ and Python 3.12+. These commands use PowerShell.
 
 ```powershell
 git clone https://github.com/asadullah098/Catch-me-up.git
@@ -82,7 +91,7 @@ python -m venv .venv
 Copy-Item backend/.env.example backend/.env
 ```
 
-Edit `backend/.env`:
+Provider configuration in `backend/.env`:
 
 ```dotenv
 LLM_PROVIDER=gemini
@@ -91,94 +100,48 @@ GEMINI_MODEL=gemini-3.5-flash-lite
 LLM_TIMEOUT_SECONDS=12
 ```
 
-That model was verified locally. If unavailable to your account, choose a supported model with `GEMINI_MODEL`. For a demo without external calls, set `LLM_PROVIDER=mock`.
+`GEMINI_MODEL` is configurable. `LLM_PROVIDER=mock` runs the prepared demo without an API key. Keys remain on the backend and environment files are excluded from Git.
 
-Start the backend:
+Backend:
 
 ```powershell
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8012
 ```
 
-In a second terminal:
+Frontend, in another terminal:
 
 ```powershell
 npm.cmd run dev
 ```
 
-Open **http://127.0.0.1:5180**. API docs: **http://127.0.0.1:8012/docs**. Restart the backend after changing provider settings. Keep keys server-side; environment files and local dependencies are excluded from Git.
+App: http://127.0.0.1:5180 · API docs: http://127.0.0.1:8012/docs
 
-## Verify real AI
+The demo match IDs are `ind-aus` and `spin-trap`.
 
-With the backend running:
-
-```powershell
-$result = Invoke-RestMethod "http://127.0.0.1:8012/api/matches/ind-aus/catch-up?window=5&ai=true&language=en"
-$result.mode
-```
-
-Expect `gemini` for successful inference. Repeat with `language=hi` for Hindi. A `mock` response means prepared demo output.
-
-## Deploy
-
-The Dockerfile builds the frontend and packages it with FastAPI, serving the application and `/api` from one origin on **port 8080**.
+## Docker
 
 ```powershell
 docker build -t catch-me-up .
 docker run --env-file backend/.env -p 8080:8080 catch-me-up
 ```
 
-Open http://127.0.0.1:8080. Docker is unavailable in the development workspace, so the container build remains unverified.
+The container serves the frontend and API on port 8080. The health endpoint is `/api/health`. Provider configuration comes from runtime environment variables.
 
-For Render: create a **Web Service**, connect this repository, choose **Docker**, use `./Dockerfile`, and leave Docker Command blank. Configure:
-
-| Environment variable | Value |
-| --- | --- |
-| `LLM_PROVIDER` | `gemini` |
-| `GEMINI_API_KEY` | Your private API key |
-| `GEMINI_MODEL` | The model verified for your account |
-| `LLM_TIMEOUT_SECONDS` | `12` |
-| `PORT` | `8080` |
-
-Use `/api/health` as the health check path. This configuration needs no separate frontend deployment or `VITE_API_BASE`. Verify the public URL on another device and repeat the provider checks. Public hosting remains pending; localhost is not the submission artifact link.
-
-## Verification
+## Tests
 
 ```powershell
 npm.cmd run build
 .\.venv\Scripts\python.exe -m pytest backend/test_api.py -q
 npx.cmd playwright install chromium
-# With both local development servers running:
+# Browser checks require both development servers.
 npm.cmd run test:ui
 node scripts/verify-artwork.mjs
 ```
 
-Latest checks: production build passed; 14 backend tests passed; bilingual UI checks passed. Artwork checks cover seven widths from 320 to 1440px, portrait loading, and four accessibility scans. Automated browser checks substitute deterministic responses for provider calls, avoiding API quota use. Verification output is stored in ignored `artifacts/`.
+The checks cover API behavior, evidence links, filters, shortlist persistence, Hindi, recovery states, keyboard access, reduced motion, and responsive layout. Browser tests use deterministic responses to avoid consuming API quota. Live Gemini generation has been checked separately in English and Hindi.
 
-## One-minute evaluator walkthrough
+## AI tools used
 
-1. Show **132/3** and read the rookie-led comeback.
-2. Open a takeaway's supporting deliveries.
-3. Switch to **The spin squeeze** while the score stays unchanged.
-4. Open Rehan Malik's background and Fantasy Forte.
-5. Switch to **Hindi**, then regenerate with **Catch me up**.
+Gemini and LangChain generate the match and player summaries. Codex assisted with implementation and UI iteration, and image generation was used for the fictional portraits.
 
-## Project guide
-
-| Path | Purpose |
-| --- | --- |
-| `src/` | Bilingual React interface and local portraits |
-| `backend/main.py` | Context, API, AI generation, validation, and fallback |
-| `data/` | Fictional commentary snapshots and player profiles |
-| `design-system/MASTER.md` | UI/UX Pro Max design system and spatial glass styling |
-| `src/assets/players/README.md` | Portrait provenance and prompt set |
-| `project_context.md` | Product goals and scope |
-| `implementation_plan.md` | Implementation sequence |
-| `progress_tracking.md` | Completed work and remaining dependencies |
-| `submission_readiness.md` | Assignment readiness checklist |
-| `submission_note.md` | Submission note under 200 words |
-
-## Next steps
-
-Publish the artifact and verify hosted AI generation. Beyond this assignment prototype: reliable live commentary, verified player records, freshness handling, rate limits, provider cost controls, and grounding evaluation.
-
-AI tools used: **Gemini through LangChain** for summaries, **Codex** for implementation and UI iteration, and built-in **image generation** for fictional portraits. This is an independent internship prototype, not an official Dream11 product.
+This is an independent assignment prototype, not an official Dream11 product.
