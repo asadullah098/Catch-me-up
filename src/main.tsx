@@ -1,0 +1,10 @@
+import ReactDOM from 'react-dom/client';
+import '@fontsource/bebas-neue/latin-400.css';
+import '@fontsource/source-sans-3/latin-400.css';
+import '@fontsource/source-sans-3/latin-600.css';
+import '@fontsource/source-sans-3/latin-700.css';
+import '@fontsource/noto-sans-devanagari/devanagari-400.css';
+import '@fontsource/noto-sans-devanagari/devanagari-600.css';
+import App from './App';
+import './styles.css';
+ReactDOM.createRoot(document.getElementById('root')!).render(<App/>);
