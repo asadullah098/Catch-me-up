@@ -96,3 +96,11 @@ Live prompt review: added explicit most-recent-completed-over facts and numeric/
 - [x] Review desktop/mobile screenshots and pass the production build.
 
 - [x] Remove portrait header badges at user request; retain bilingual disclosure in the shared note below the player cards.
+
+## GitHub publication — complete
+- [x] Publish the project to https://github.com/asadullah098/Catch-me-up on main.
+- [x] Replace setup-oriented README with evaluator documentation, screenshots, AI/data boundaries, local setup, deployment and a demo walkthrough.
+- [x] Set and verify the GitHub repository description.
+- [x] Verify environment files and local dependencies are excluded; check staged text for accidental credentials.
+- [x] Refresh screenshots and pass bilingual responsive artwork/accessibility verification.
+Remaining: deploy the public artifact, configure Gemini on the host, verify hosted inference, and submit the assignment link and note.

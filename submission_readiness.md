@@ -18,6 +18,7 @@
 | Short note | submission_note.md contains a draft under 200 words with honest runtime status. |
 
 ## Required external setup before submission
+- [x] Publish the source code, evaluator README, screenshots, and repository description to https://github.com/asadullah098/Catch-me-up. This is the source repository, not the deployed artifact URL.
 - [x] Configure Gemini in backend/.env and verify successful English/Hindi generation: both live responses returned mode=gemini, three evidence-linked takeaways, and three player profiles. AI is requested by default. Repeat this verification after deploying.
 - [ ] Publish frontend/backend with a working public HTTPS artifact link. Localhost is not a shareable submission link. A tested production page/API serving path and Dockerfile are prepared for one origin. If deploying frontend and backend separately, configure VITE_API_BASE and add the frontend origin to backend CORS.
 - [ ] Replace the artifact URL in submission_note.md and describe the provider actually enabled.
